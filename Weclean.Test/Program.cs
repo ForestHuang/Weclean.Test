@@ -1,52 +1,70 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using RestSharp;
 using Newtonsoft.Json;
 
 namespace Weclean.Test
 {
-    class Program
+    static class Program
     {
 
-        #region Private 方法
+        #region private method 方法
 
-        public static Stream FileToStream(string fileName)
+        /// <summary>
+        /// file to stream
+        /// </summary>
+        /// <param name="fileName">文件路径</param>
+        /// <returns>stream</returns>
+        public static Stream thisFileToStream(this string fileName)
         {
-            FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
-            byte[] bytes = new byte[fileStream.Length];
-            fileStream.Read(bytes, 0, bytes.Length);
-            fileStream.Close();
-            Stream stream = new MemoryStream(bytes);
-            return stream;
+            try
+            {
+                FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+                byte[] bytes = new byte[fileStream.Length];
+                fileStream.Read(bytes, 0, bytes.Length);
+                fileStream.Close();
+                return new MemoryStream(bytes);
+            }
+            catch (System.Exception ex)
+            {
+                throw new System.Exception(ex.Message);
+            }
         }
 
-        public static byte[] StreamToBytes(Stream stream)
+        /// <summary>
+        /// stream to byte
+        /// </summary>
+        /// <param name="stream">文件流</param>
+        /// <returns>byte</returns>
+        public static byte[] thisStreamToBytes(this Stream stream)
         {
-            byte[] bytes = new byte[stream.Length];
-            stream.Read(bytes, 0, bytes.Length);
-            stream.Seek(0, SeekOrigin.Begin);
-            return bytes;
+            try
+            {
+                byte[] bytes = new byte[stream.Length];
+                stream.Read(bytes, 0, bytes.Length);
+                stream.Seek(0, SeekOrigin.Begin);
+                return bytes;
+            }
+            catch (System.Exception ex)
+            {
+                throw new System.Exception(ex.Message);
+            }
         }
 
         #endregion
 
-        public static RestClient restClient = new RestClient("http://localhost:65519/WeClean/WeCleanBackstageService.svc");
+        /// <summary>
+        /// WCF 地址
+        /// </summary>
+        public static RestClient restClientWeClean = new RestClient("http://localhost:65519/WeClean/WeCleanBackstageService.svc");
 
         static void Main(string[] args)
         {
-
-            HTTPCommon.HttpGet(restClient, "WeCleanLogin", new List<string>() { "2", "a" });
-            string excelPath = @"D:\weclean.xlsx";
-            Stream stream = FileToStream(excelPath);
+            //----------- 员工信息 -----------
             var model = JsonConvert.SerializeObject(new
             {
                 CompanyName = "Weclean",
-                StreamFile = StreamToBytes(stream),
+                StreamFile = ((@"D:\weclean.xlsx").thisFileToStream()).thisStreamToBytes(),
                 OperatorName = "senlin.huang"
             });
         }
