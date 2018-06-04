@@ -7,7 +7,6 @@ namespace Weclean.Test
 {
     static class Program
     {
-
         #region private method 方法
 
         /// <summary>
@@ -58,6 +57,9 @@ namespace Weclean.Test
         /// </summary>
         public static RestClient restClientWeClean = new RestClient("http://localhost:65519/WeClean/WeCleanBackstageService.svc");
 
+        /// <summary>
+        /// 程序入口
+        /// </summary>
         static void Main(string[] args)
         {
             //----------- 员工信息 -----------
